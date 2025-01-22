@@ -23,12 +23,12 @@
             font-weight: bold;
         }
         .accepte {
-            color: #00ff00;
-            text-shadow: 0 0 5px #00ff00;
+            color: #4dff4d;
+            text-shadow: 0 0 5px #4dff4d;
         }
         .refuse {
-            color: #ff0000;
-            text-shadow: 0 0 5px #ff0000;
+            color: #ff4d4d;
+            text-shadow: 0 0 5px #ff4d4d;
         }
         input, button, select {
             font-size: 1em;
@@ -39,25 +39,26 @@
             border-radius: 4px;
         }
         button {
-            background-color: #ff00ff;
+            background-color: #fa6f2a;
             color: white;
             padding: 10px 20px;
             cursor: pointer;
             transition: background-color 0.3s;
         }
         button:hover {
-            background-color: #cc00cc;
+            background-color: #e55d1a;
         }
         .form-group {
             margin: 15px 0;
-            background-color: rgba(0, 0, 0, 0.6);
+            background-color: rgba(250, 111, 42, 0.1);
             padding: 20px;
             border-radius: 8px;
+            border: 1px solid rgba(250, 111, 42, 0.3);
         }
         h1 {
-            color: #ff00ff;
+            color: #fa6f2a;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3),
-                         0 0 20px #ff00ff;
+                         0 0 20px rgba(250, 111, 42, 0.5);
             font-size: 2.5em;
             margin-bottom: 30px;
         }
@@ -65,7 +66,10 @@
             display: block;
             margin-bottom: 5px;
             color: #fff;
-            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+            text-shadow: 0 0 5px rgba(250, 111, 42, 0.5);
+        }
+        select:focus, input:focus {
+            outline: 2px solid #fa6f2a;
         }
     </style>
 </head>
@@ -85,10 +89,8 @@
             <option value="baskets">Baskets</option>
         </select>
     </div>
-
     <button onclick="verifier()">Vérifier</button>
     <div id="resultat" class="result"></div>
-
     <script>
         function verifier() {
             const age = parseInt(document.getElementById('age').value);
@@ -100,7 +102,6 @@
                 resultat.className = 'result';
                 return;
             }
-
             if (age >= 18 && chaussures !== 'baskets') {
                 resultat.textContent = "Bonne soirée";
                 resultat.className = 'result accepte';
