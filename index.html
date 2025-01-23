@@ -1,136 +1,214 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Picho Pingo Night Club</title>
+    <title>Regression Linéaire</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
+        table {
+            border-collapse: collapse;
+            width: 100%;
             max-width: 600px;
-            margin: 50px auto;
-            padding: 20px;
+            margin: 20px auto;
+        }
+        th, td {
+            border: 1px solid #ddd;
             text-align: center;
-            background: linear-gradient(rgba(52, 60, 52, 0.95), rgba(52, 60, 52, 0.95)),
-                        url('/api/placeholder/800/800') center no-repeat;
-            background-attachment: fixed;
-            color: #e1d4b4;
-        }
-        .result {
-            margin-top: 20px;
-            padding: 10px;
-            font-size: 1.2em;
-            font-weight: bold;
-        }
-        .accepte {
-            color: #a9c1a9;
-            text-shadow: 0 0 5px #a9c1a9;
-        }
-        .refuse {
-            color: #c1a9a9;
-            text-shadow: 0 0 5px #c1a9a9;
-        }
-        input, button, select {
-            font-size: 1em;
             padding: 8px;
-            margin: 10px;
-            background-color: rgba(225, 212, 180, 0.9);
-            border: 1px solid #343c34;
-            border-radius: 4px;
-            color: #343c34;
+        }
+        th {
+            background-color: #f4f4f4;
         }
         button {
-            background-color: #343c34;
-            color: #e1d4b4;
-            padding: 12px 25px;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: 1px solid rgba(225, 212, 180, 0.3);
-            font-weight: bold;
-        }
-        button:hover {
-            background-color: #3a423a;
-            transform: translateY(-2px);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-        }
-        .form-group {
-            margin: 15px 0;
-            background-color: rgba(225, 212, 180, 0.05);
-            padding: 25px;
-            border-radius: 8px;
-            border: 1px solid rgba(225, 212, 180, 0.1);
-            backdrop-filter: blur(5px);
-        }
-        h1 {
-            color: #e1d4b4;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3),
-                         0 0 20px rgba(225, 212, 180, 0.3);
-            font-size: 2.5em;
-            margin-bottom: 30px;
-            letter-spacing: 2px;
-            font-weight: bold;
-        }
-        label {
             display: block;
-            margin-bottom: 10px;
-            color: #e1d4b4;
-            text-shadow: 0 0 5px rgba(225, 212, 180, 0.3);
-            font-size: 1.1em;
-            letter-spacing: 1px;
-        }
-        select:focus, input:focus {
-            outline: 2px solid rgba(225, 212, 180, 0.5);
-            box-shadow: 0 0 10px rgba(225, 212, 180, 0.2);
-        }
-        input::placeholder {
-            color: rgba(52, 60, 52, 0.6);
-        }
-        select {
+            margin: 20px auto;
+            padding: 10px 20px;
+            font-size: 16px;
             cursor: pointer;
         }
-        option {
-            background-color: #e1d4b4;
-            color: #343c34;
+        canvas {
+            display: block;
+            margin: 20px auto;
+            border: 1px solid #ddd;
+        }
+        #cost {
+            text-align: center;
+            font-size: 18px;
+            margin: 10px auto;
         }
     </style>
-</head>
-<body>
-    <h1>Picho Pingo Night Club</h1>
-    <div class="form-group">
-        <label for="age">Entrez votre âge :</label>
-        <input type="number" id="age" min="0" max="120">
-    </div>
-    
-    <div class="form-group">
-        <label for="chaussures">Type de chaussures :</label>
-        <select id="chaussures">
-            <option value="escarpins">Escarpins</option>
-            <option value="clarcks">Clarcks</option>
-            <option value="mocassins">Mocassins</option>
-            <option value="baskets">Baskets</option>
-        </select>
-    </div>
-    <button onclick="verifier()">Vérifier</button>
-    <div id="resultat" class="result"></div>
     <script>
-        function verifier() {
-            const age = parseInt(document.getElementById('age').value);
-            const chaussures = document.getElementById('chaussures').value;
-            const resultat = document.getElementById('resultat');
-            
-            if (isNaN(age)) {
-                resultat.textContent = "Veuillez entrer un âge valide";
-                resultat.className = 'result';
-                return;
+        function fillRandomValues() {
+            const yRow = document.querySelector('tbody tr');
+            yRow.innerHTML = '<th>y</th>'; // Reset the row content
+
+            const usedValues = new Set();
+            let prevValue = Math.random() * 10; // Initialize the first value
+
+            for (let i = 0; i < 10; i++) {
+                let randomValue;
+                do {
+                    randomValue = Math.min(Math.max(prevValue + (Math.random() * 4 - 2), 0), 10).toFixed(1); // Ensure difference <= 2 and within 0-10
+                } while (usedValues.has(randomValue));
+
+                prevValue = parseFloat(randomValue); // Update the previous value
+                usedValues.add(randomValue); // Add to the set of used values
+
+                const cell = document.createElement('td');
+                cell.textContent = randomValue;
+                yRow.appendChild(cell);
             }
-            if (age >= 18 && chaussures !== 'baskets') {
-                resultat.textContent = "Bonne soirée";
-                resultat.className = 'result accepte';
-            } else {
-                resultat.textContent = "Il va falloir rentrer chez vous";
-                resultat.className = 'result refuse';
+            plotGraph();
+        }
+
+        function calculateRegressionLine() {
+            const xValues = Array.from({ length: 10 }, (_, i) => i);
+            const yCells = document.querySelectorAll('tbody tr td');
+            const yValues = Array.from(yCells).map(cell => parseFloat(cell.textContent));
+
+            const n = xValues.length;
+            const sumX = xValues.reduce((a, b) => a + b, 0);
+            const sumY = yValues.reduce((a, b) => a + b, 0);
+            const sumXY = xValues.reduce((sum, x, i) => sum + x * yValues[i], 0);
+            const sumX2 = xValues.reduce((sum, x) => sum + x * x, 0);
+
+            const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+            const intercept = (sumY - slope * sumX) / n;
+
+            return { slope, intercept };
+        }
+
+        function calculateCost(slope, intercept, xValues, yValues) {
+            const n = xValues.length;
+            const cost = xValues.reduce((sum, x, i) => {
+                const predictedY = slope * x + intercept;
+                return sum + Math.pow(predictedY - yValues[i], 2);
+            }, 0) / n;
+            return cost.toFixed(2);
+        }
+
+        function plotGraph() {
+            const canvas = document.getElementById('graph');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the canvas
+
+            // Define axes
+            ctx.beginPath();
+            ctx.moveTo(40, 10);
+            ctx.lineTo(40, 260);
+            ctx.lineTo(360, 260);
+            ctx.strokeStyle = 'black';
+            ctx.stroke();
+
+            // Label axes
+            ctx.font = '12px Arial';
+            ctx.fillStyle = 'black';
+            ctx.fillText('y', 20, 20);
+            ctx.fillText('x', 370, 270);
+
+            // Get x and y values
+            const xValues = Array.from({ length: 10 }, (_, i) => i);
+            const yCells = document.querySelectorAll('tbody tr td');
+            const yValues = Array.from(yCells).map(cell => parseFloat(cell.textContent));
+
+            // Plot points
+            ctx.fillStyle = 'blue';
+            xValues.forEach((x, i) => {
+                const canvasX = 40 + x * 30;
+                const canvasY = 260 - yValues[i] * 25;
+                ctx.beginPath();
+                ctx.arc(canvasX, canvasY, 5, 0, 2 * Math.PI);
+                ctx.fill();
+            });
+        }
+
+        async function plotRegressionLineStepByStep() {
+            const canvas = document.getElementById('graph');
+            const ctx = canvas.getContext('2d');
+            const xValues = Array.from({ length: 10 }, (_, i) => i);
+            const yCells = document.querySelectorAll('tbody tr td');
+            const yValues = Array.from(yCells).map(cell => parseFloat(cell.textContent));
+
+            const n = xValues.length;
+            const sumX = xValues.reduce((a, b) => a + b, 0);
+            const sumY = yValues.reduce((a, b) => a + b, 0);
+            const sumXY = xValues.reduce((sum, x, i) => sum + x * yValues[i], 0);
+            const sumX2 = xValues.reduce((sum, x) => sum + x * x, 0);
+
+            const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+            const intercept = (sumY - slope * sumX) / n;
+
+            const costElement = document.getElementById('cost');
+
+            for (let i = 0; i <= 10; i++) {
+                const partialSlope = slope * (i / 10);
+                const partialIntercept = intercept * (i / 10);
+                const cost = calculateCost(partialSlope, partialIntercept, xValues, yValues);
+
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                plotGraph();
+
+                ctx.strokeStyle = 'red';
+                ctx.beginPath();
+
+                const startX = 0;
+                const startY = partialIntercept;
+                const endX = 9;
+                const endY = partialSlope * endX + partialIntercept;
+
+                const canvasStartX = 40 + startX * 30;
+                const canvasStartY = 260 - startY * 25;
+                const canvasEndX = 40 + endX * 30;
+                const canvasEndY = 260 - endY * 25;
+
+                ctx.moveTo(canvasStartX, canvasStartY);
+                ctx.lineTo(canvasEndX, canvasEndY);
+                ctx.stroke();
+
+                costElement.textContent = `Coût actuel : ${cost}`;
+
+                await new Promise(resolve => setTimeout(resolve, 200));
             }
         }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            fillRandomValues(); // Fill initial random values
+
+            const initializeButton = document.getElementById('initialize-table');
+            initializeButton.addEventListener('click', fillRandomValues); // Add click event to the initialize button
+
+            const regressionButton = document.getElementById('run-regression');
+            regressionButton.addEventListener('click', plotRegressionLineStepByStep); // Add click event to the regression button
+        });
     </script>
+</head>
+<body>
+    <h1 style="text-align: center;">Régression Linéaire</h1>
+    <button id="initialize-table">Initialiser le tableau</button>
+    <table>
+        <thead>
+            <tr>
+                <th>x</th>
+                <th>0</th>
+                <th>1</th>
+                <th>2</th>
+                <th>3</th>
+                <th>4</th>
+                <th>5</th>
+                <th>6</th>
+                <th>7</th>
+                <th>8</th>
+                <th>9</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th>y</th>
+            </tr>
+        </tbody>
+    </table>
+    <button id="run-regression">Lancer la régression</button>
+    <canvas id="graph" width="400" height="300"></canvas>
+    <p id="cost">Coût actuel : </p>
 </body>
 </html>
